@@ -1,10 +1,11 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import { strategy1 } from './strategy'
+import store from '../store'
+import { AuthConfig } from './authConfig'
 
 Vue.use(VueRouter)
 
-const routes = [
+export const routes = [
   {
     path: '/',
     redirect: '/login'
@@ -76,48 +77,20 @@ const router = new VueRouter({
   routes
 })
 
-
-/**
- * 策略函数注册
- */
-const judgment = strategy1
-
-const userRoles = ['user']
-
 router.beforeEach(async (to, from, next) => {
   const { roles } = to.meta
+
+  // 如果有缓存，优先使用缓存
+  const userRoles = store.state.user.roles.length > 0
+    ? store.state.user.roles
+    : await store.dispatch('user/getUserRoles')
+
   if (roles === undefined) { next(); return }
-  if (judgment(userRoles, roles)) { next(); return }
+
+  if (AuthConfig.strategy(userRoles, roles)) { next(); return }
+  
   next('/404')
 })
 
-
-/**
- * @description 侧边栏展示数据计算函数
- * @param {Array} routes
- * @param {Array<string>} userRoles
- * @returns {Array}
- */
-const compute = (routes, userRoles) => {
-  if (routes === undefined) return []
-  const res = []
-  for (let i = 0; i < routes.length; i++) {
-    const route = routes[i]
-    if (route.meta === undefined || route.meta.menu === undefined) continue
-    const { menu } = route.meta
-    if (menu.isGroup) {
-      const children = compute(route.children, userRoles)
-      res.push({ title: menu.title, path: route.path, children })
-    }
-    else {
-      if (route.meta && route.meta.roles)
-        if (!judgment(userRoles, route.meta.roles)) continue
-      res.push({ title: menu.title, path: route.path })
-    }
-  }
-  return res
-}
-
-console.log(compute(routes, userRoles))
 
 export default router
