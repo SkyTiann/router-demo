@@ -1,12 +1,7 @@
-import { AuthConfig } from '../../router/authConfig'
-import { routes } from '../../router/index'
+import { getRoles } from '@/api'
+import { routes } from '@/router'
+import { roleStrategy } from '@/router/strategy'
 
-/**
- * 模拟网络请求
- */
-const getRoles = () => new Promise((resolve, reject) => {
-    setTimeout(() => { resolve(['user']) }, 2000);
-})
 
 const state = {
     roles: [],
@@ -26,7 +21,7 @@ const actions = {
     async getUserRoles({ commit }) {
         const roles = await getRoles()
         commit('SET_ROLES', roles)
-        commit('SET_SIDEBAR', AuthConfig.generateSidebar(routes, roles))
+        commit('SET_SIDEBAR', roleStrategy.generateSidebar(routes, roles))
         return roles
     }
 }

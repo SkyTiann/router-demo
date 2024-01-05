@@ -11,6 +11,14 @@ const strategy1 = (userRoles, routeRoles) => {
 }
 
 /**
+ * @description 判断是否有token
+ * @param {string} key
+ * @returns {Boolean}
+ */
+const strategy2 = (key) => sessionStorage.getItem(key) === null
+
+
+/**
  * @description 侧边栏展示数据计算函数
  * @param {Array} routes
  * @param {Array<string>} userRoles
@@ -37,12 +45,11 @@ const compute = (routes, userRoles, strategy) => {
     return res
 }
 
-/**
- * 注册策略
- */
-const currentStrategy = strategy1
+export const roleStrategy = {
+    verify: strategy1,
+    generateSidebar: (routes, userRoles) => compute(routes, userRoles, strategy1)
+}
 
-export const AuthConfig = {
-    strategy: currentStrategy,
-    generateSidebar: (routes, userRoles) => compute(routes, userRoles, currentStrategy)
+export const tokenStrategy = {
+    verify: strategy2
 }
