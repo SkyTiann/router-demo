@@ -1,25 +1,32 @@
 <template>
     <div class="layout">
-        <aside>
-            <sidebar class="sidebar-container" />
+        <aside style="width: 250px;">
+            <Slider :data="sidebarData"></Slider>
         </aside>
         <div>
-            <header></header>
-            <main>
-                <router-view />
-            </main>
+            <router-view />
         </div>
     </div>
 </template>
 
 <script>
-import { Sidebar } from '@/components/Sidebar'
+import Slider from '@/components/Sidebar';
 
 export default {
-    components: { Sidebar }
+    components: { Slider },
+    computed: {
+        sidebarData() {
+            return this.$store.state.user.sidebar
+        }
+    }
 }
 
 </script>
   
-<style></style>
+<style>
+.layout {
+    display: flex;
+    gap: 20px;
+}
+</style>
   

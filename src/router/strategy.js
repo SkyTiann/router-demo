@@ -20,26 +20,26 @@ const strategy2 = (key) => sessionStorage.getItem(key) === null
 
 /**
  * @description 侧边栏展示数据计算函数
- * @param {Array} routes
- * @param {Array<string>} userRoles
- * @param {Function} strategy
- * @returns {Array}
+ * @param {Array} routes 项目全部路由
+ * @param {Array<string>} userRoles 用户角色信息
+ * @param {Function} strategy 权限验证策略
+ * @returns {Array} 
  */
 const compute = (routes, userRoles, strategy) => {
-    if (routes === undefined) return []
     const res = []
-    for (let i = 0; i < routes.length; i++) {
-        const route = routes[i]
-        if (route.meta === undefined || route.meta.menu === undefined) continue
-        const { menu } = route.meta
-        if (menu.isGroup) {
+    for (const route of routes) {
+        const { meta } = route
+        if (meta === undefined) continue
+        const { menu } = meta
+        if (menu === undefined) continue
+        if (route.children !== undefined) {
             const children = compute(route.children, userRoles, strategy)
-            res.push({ title: menu.title, path: route.path, children })
+            res.push({ title: menu.title, icon: menu.icon, path: route.path, children })
         }
         else {
-            if (route.meta && route.meta.roles)
-                if (!strategy(userRoles, route.meta.roles)) continue
-            res.push({ title: menu.title, path: route.path })
+            const { roles } = meta
+            if (roles && !strategy(userRoles, roles)) continue
+            res.push({ title: menu.title, icon: menu.icon, path: route.path })
         }
     }
     return res

@@ -14,7 +14,6 @@ export const routes = [
   {
     path: '/login',
     name: 'login',
-    hidden: true,
     component: () => import('../views/login.vue'),
   },
   /**
@@ -24,14 +23,23 @@ export const routes = [
     path: '/group1',
     redirect: '/group1/module1',
     component: () => import('../views/layout.vue'),
+    meta: {
+      menu: { title: '一组', icon: 'el-icon-eleme' }
+    },
     children: [
       {
         path: 'module1',
         component: () => import('../views/module1'),
+        meta: {
+          menu: { title: '模块一', icon: 'el-icon-eleme' }
+        },
       },
       {
         path: 'module2',
         component: () => import('../views/module2'),
+        meta: {
+          menu: { title: '模块二', icon: 'el-icon-eleme' }
+        },
       }
     ]
   },
@@ -42,19 +50,24 @@ export const routes = [
     path: '/group2',
     redirect: '/group2/module3',
     component: () => import('../views/layout.vue'),
+    meta: {
+      menu: { title: '二组', icon: 'el-icon-eleme' }
+    },
     children: [
       {
         path: 'module3',
         component: () => import('../views/module3'),
         meta: {
-          roles: ['admin', 'user']
+          roles: ['admin', 'user'],
+          menu: { title: '模块三', icon: 'el-icon-eleme' }
         }
       },
       {
         path: 'module4',
         component: () => import('../views/module4'),
         meta: {
-          roles: ['admin', 'user']
+          roles: ['admin', 'user'],
+          menu: { title: '模块四', icon: 'el-icon-eleme' }
         }
       }
     ]
@@ -66,19 +79,24 @@ export const routes = [
     path: '/group3',
     redirect: '/group3/module5',
     component: () => import('../views/layout.vue'),
+    meta: {
+      menu: { title: '三组', icon: 'el-icon-eleme' },
+    },
     children: [
       {
         path: 'module5',
         component: () => import('../views/module5'),
         meta: {
-          roles: ['admin']
+          roles: ['admin'],
+          menu: { title: '模块五', icon: 'el-icon-eleme' },
         }
       },
       {
         path: 'module6',
         component: () => import('../views/module6'),
         meta: {
-          roles: ['admin']
+          roles: ['admin'],
+          menu: { title: '模块六', icon: 'el-icon-eleme' },
         }
       }
     ]
@@ -124,7 +142,6 @@ router.beforeEach(async (to, from, next) => {
 
   next('/404')
 })
-
 
 
 export default router
