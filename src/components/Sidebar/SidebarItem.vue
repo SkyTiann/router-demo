@@ -35,7 +35,7 @@ export default {
         },
         routeRedirects() {
             if (this.$route.path === this.basePath) return
-            this.$router.push({ path: this.basePath })
+            this.$router.push({ path: this.basePath }).catch(e => { })
         }
 
     }

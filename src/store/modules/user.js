@@ -1,6 +1,6 @@
 import { getRoles } from '@/api'
-import { routes } from '@/router'
-import { roleStrategy } from '@/router/strategy'
+// import { routes } from '@/router'
+// import { roleStrategy } from '@/router/strategy'
 
 
 const state = {
@@ -21,7 +21,7 @@ const actions = {
     async getUserRoles({ commit }) {
         const roles = await getRoles()
         commit('SET_ROLES', roles)
-        commit('SET_SIDEBAR', roleStrategy.generateSidebar(routes, roles))
+        // commit('SET_SIDEBAR', roleStrategy.generateSidebar(routes, roles))
         return roles
     }
 }

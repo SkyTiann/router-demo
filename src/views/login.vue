@@ -8,7 +8,8 @@
 
 <script>
 import { sessionStorageKey } from '@/utils/storageKey'
-import { getToken } from '@/api'
+import { loading } from '@/utils/tools'
+import { getToken, getInfoForError, getInfoForLongTime } from '@/api'
 
 export default {
     methods: {

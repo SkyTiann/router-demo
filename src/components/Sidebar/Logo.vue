@@ -1,6 +1,5 @@
 <template>
-  <div>
-    <h1>Logo</h1>
+  <div class="sidebar-logo">
   </div>
 </template>
 
@@ -16,4 +15,9 @@ export default {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.sidebar-logo{
+  background-color: blue;
+  height: 70px;
+}
+</style>
