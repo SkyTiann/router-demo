@@ -1,6 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import { combinedRouting, roleStrategy, sidebarCalculation } from './compute'
+import store from '@/store'
+import { combinedRouting, roleStrategy } from './compute'
 
 Vue.use(VueRouter)
 
@@ -22,29 +23,32 @@ export const groups = [
   {
     path: '/group1',
     meta: {
-      menu: { title: '一组', icon: 'el-icon-eleme' },
+      menu: { title: '一组', icon: 'el-icon-s-tools' }
     },
     children: [
       {
         path: 'module1',
         component: () => import('../views/module1'),
         meta: {
-          menu: { title: '模块一', icon: 'el-icon-eleme' }
+          menu: { title: '模块一', icon: 'el-icon-delete-solid' }
         }
       },
       {
         path: 'module2',
         component: () => import('../views/module2'),
         meta: {
-          menu: { title: '模块二', icon: 'el-icon-eleme' },
+          menu: { title: '模块二', icon: 'el-icon-eleme' }
         }
       }
     ]
   },
+  /**
+   * admin 专享
+   */
   {
     path: '/group2',
     meta: {
-      menu: { title: '二组', icon: 'el-icon-eleme' },
+      menu: { title: '二组', icon: 'el-icon-warning' },
       roles: ['admin']
     },
     children: [
@@ -64,10 +68,14 @@ export const groups = [
       }
     ],
   },
+  /**
+  * admin 与 user 专享
+  */
   {
     path: '/group3',
     meta: {
-      menu: { title: '三组', icon: 'el-icon-eleme' }
+      menu: { title: '三组', icon: 'el-icon-eleme' },
+      roles: ['admin', 'user']
     },
     children: [
       {
@@ -85,9 +93,38 @@ export const groups = [
         }
       }
     ]
+  },
+  {
+    path: '/group4',
+    meta: {
+      menu: { title: '四组', icon: 'el-icon-eleme' },
+    },
+    children: [
+      {
+        path: 'module7',
+        component: () => import('../views/module7'),
+        meta: {
+          menu: { title: '模块七', icon: 'el-icon-eleme' },
+        }
+      }
+    ]
+  },
+  {
+    path: '/group5',
+    meta: {
+      menu: { title: '五组', icon: 'el-icon-eleme' },
+    },
+    children: [
+      {
+        path: 'module8',
+        component: () => import('../views/module8'),
+        meta: {
+          menu: { title: '模块八', icon: 'el-icon-eleme' },
+        }
+      }
+    ]
   }
 ]
-console.log(combinedRouting(routes, groups, () => import('@/views/layout.vue')))
 
 const router = new VueRouter({
   mode: 'history',
@@ -96,7 +133,13 @@ const router = new VueRouter({
 })
 
 router.beforeEach(async (to, from, next) => {
-  next()
+  const { meta } = to
+  const userRoles = store.state.user.roles.length > 0
+    ? store.state.user.roles
+    : await store.dispatch('user/getUserRoles')
+  if (meta.roles === undefined) { next(); return }
+  if (roleStrategy(userRoles, meta.roles)) { next(); return }
+  next('/404')
 })
 
 

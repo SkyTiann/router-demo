@@ -1,7 +1,7 @@
 <template>
     <div class="layout">
         <aside style="width: 250px;">
-            <Slider :data="sidebarData"></Slider>
+            <Sidebar></Sidebar>
         </aside>
         <div>
             <router-view />
@@ -10,14 +10,12 @@
 </template>
 
 <script>
-import Slider from '@/components/Sidebar';
+import Sidebar from "@/components/Sidebar2";
 
 export default {
-    components: { Slider },
-    computed: {
-        sidebarData() {
-            return this.$store.state.user.sidebar
-        }
+    components: { Sidebar },
+    mounted(){
+        console.log('ni好');
     }
 }
 

@@ -9,7 +9,7 @@ export const getToken = () => new Promise((resolve) => {
 })
 
 export const getRoles = () => new Promise((resolve) => {
-    setTimeout(() => { resolve(['user']) }, DelayTime);
+    setTimeout(() => { resolve(['admin']) }, DelayTime);
 })
 
 

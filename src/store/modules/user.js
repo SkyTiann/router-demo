@@ -1,6 +1,6 @@
 import { getRoles } from '@/api'
-// import { routes } from '@/router'
-// import { roleStrategy } from '@/router/strategy'
+import { groups } from '@/router'
+import { sidebarCalculation, roleStrategy } from '@/router/compute'
 
 
 const state = {
@@ -14,14 +14,14 @@ const mutations = {
     },
     SET_SIDEBAR: (state, sidebar) => {
         state.sidebar = sidebar
-    }
+    },
 }
 
 const actions = {
     async getUserRoles({ commit }) {
         const roles = await getRoles()
         commit('SET_ROLES', roles)
-        // commit('SET_SIDEBAR', roleStrategy.generateSidebar(routes, roles))
+        commit('SET_SIDEBAR',sidebarCalculation(groups, roles, roleStrategy))
         return roles
     }
 }

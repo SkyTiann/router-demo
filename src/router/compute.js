@@ -13,6 +13,25 @@ export const roleStrategy = (userRoles, routeRoles) => {
     return [...set1].filter(x => set2.has(x)).length > 0
 }
 
+
+/**
+ * @description 下沉权限
+ * @param {Array} group 项目组路由
+ * @returns {Array}
+ */
+const sinkRoles = (group) => {
+    group = _.cloneDeep(group)
+    if (group.meta.roles === undefined) return group.children
+    const { children } = group
+    for (let i = 0; i < children.length; i++) {
+        const module = children[i]
+        module.meta.roles = module.meta.roles === undefined
+            ? [...group.meta.roles]
+            : [...new Set([...module.meta.roles, ...group.meta.roles])]
+    }
+    return group.children
+}
+
 /**
  * @description 侧边栏展示数据计算函数
  * @param {Array} groups 项目组路由
@@ -22,8 +41,19 @@ export const roleStrategy = (userRoles, routeRoles) => {
  */
 export const sidebarCalculation = (groups, userRoles, strategy) => {
     groups = _.cloneDeep(groups)
-
+    const res = []
+    groups.forEach((group) => {
+        const children = sinkRoles(group)
+        const passModule = children
+            .filter(({ meta }) => strategy(userRoles, meta.roles))
+        if (passModule.length > 0) {
+            group.children = passModule
+            res.push(group)
+        }
+    })
+    return res
 }
+
 /**
  * @description 组合路由
  * @param {Array} routes 常规路由
@@ -38,16 +68,9 @@ export const combinedRouting = (routes, groups, layout) => {
         const group = groups[i]
         group.component = layout
         group.redirect = `${group.path}/${group.children[0].path}`
-        if (group.meta.roles === undefined || group.meta.roles.length === 0) continue
-        const { children } = group
-        for (let j = 0; j < children.length; j++) {
-            const module = children[j]
-            module.roles = module.roles === undefined
-                ? [...group.meta.roles]
-                : [...new Set([...module.roles, ...group.meta.roles])]
-        }
+        // 组权限下沉
+        group.children = sinkRoles(group)
     }
-
     for (let i = 0; i < routes.length; i++) {
         if (routes[i] === 'InsertGroups') {
             routes.splice(i, 1, ...groups)
