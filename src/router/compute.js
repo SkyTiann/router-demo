@@ -1,4 +1,13 @@
 import _ from 'lodash'
+import store from '@/store'
+import { sessionStorageKey } from '@/utils/storageKey'
+
+/**
+ * 策略函数定义
+ * 函数名称 [xxx]Strategy
+ * 返回值为 true 则表示为允许该路由通行
+ * 返回值为 false 则表示阻止该路由通行
+ */
 
 /**
  * @description 判断权限策略函数
@@ -6,13 +15,19 @@ import _ from 'lodash'
  * @param {Array<string | undefined} routeRoles
  * @returns {Boolean}
  */
-export const roleStrategy = (userRoles, routeRoles) => {
+const roleStrategy = (userRoles, routeRoles) => {
     if (routeRoles === undefined) return true
     const set1 = new Set(userRoles)
     const set2 = new Set(routeRoles)
     return [...set1].filter(x => set2.has(x)).length > 0
 }
 
+/**
+ * @description token是否存在策略,token被存储在 sessionStorage
+ * @param {string} key
+ * @returns {boolean}
+ */
+const tokenStrategy = (key) => !(sessionStorage.getItem(key) === null)
 
 /**
  * @description 下沉权限
@@ -39,7 +54,7 @@ const sinkRoles = (group) => {
  * @param {Function} strategy 角色验证策略
  * @returns {Record<string,any>} 
  */
-export const sidebarCalculation = (groups, userRoles, strategy) => {
+const sidebarCalculation = (groups, userRoles, strategy) => {
     groups = _.cloneDeep(groups)
     const res = []
     groups.forEach((group) => {
@@ -50,6 +65,33 @@ export const sidebarCalculation = (groups, userRoles, strategy) => {
             group.children = passModule
             res.push(group)
         }
+    })
+    return res
+}
+
+/**
+ * @description 权限侧边栏
+ * @param {Array} groups 
+ * @param {Array<string>} userRoles 
+ * @returns {Record<string,any>}
+ */
+export const roleSidebar = (groups, userRoles) => sidebarCalculation(groups, userRoles, roleStrategy)
+
+/**
+ * @description 生成路由路径与组件名称映射表
+ * @param {Array} groups 项目组路由
+ * @returns {Record<string,any>}
+ */
+export const routeMaps = (groups) => {
+    groups = _.cloneDeep(groups)
+    const res = {}
+    groups.forEach(({ path: groupPath, children }) => {
+        
+        children.forEach(({ path: modulePath, meta }) => {
+
+            res[`${groupPath}/${modulePath}`] = meta.menu.title
+            
+        })
     })
     return res
 }
@@ -78,4 +120,38 @@ export const combinedRouting = (routes, groups, layout) => {
         }
     }
     return routes
+}
+
+/**
+ * @description 根路由重定向
+ * @returns {string}
+ */
+export const rootRedirect = () => tokenStrategy(sessionStorageKey.TOKEN) ? '/group1' : '/login'
+
+
+/**
+ * @description 路由守卫
+ * @param {Route} to 
+ * @param {Route} from 
+ * @param {NavigationGuardNext<V>} next
+ * @returns {void}
+ */
+export const guard = async (to, from, next) => {
+    if (to.path !== '/login'
+        && tokenStrategy(sessionStorageKey.TOKEN) === false) {
+        next('/login')
+        return
+    }
+
+    if (to.path === '/login') {
+        next()
+        return
+    }
+
+    const { meta } = to
+    const userRoles = store.state.user.roles.length > 0
+        ? store.state.user.roles
+        : await store.dispatch('user/getUserRoles')
+    if (roleStrategy(userRoles, meta.roles) === false) { next('/404'); return }
+    next()
 }

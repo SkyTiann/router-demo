@@ -9,12 +9,12 @@
 <script>
 import { sessionStorageKey } from '@/utils/storageKey'
 import { loading } from '@/utils/tools'
-import { getToken, getInfoForError, getInfoForLongTime } from '@/api'
+import { getToken } from '@/api'
 
 export default {
     methods: {
         async click() {
-            const { token } = await getToken()
+            const { token } = await loading(getToken)
             sessionStorage.setItem(sessionStorageKey.TOKEN, token)
             await this.$router.push({ path: 'group1' })
         }

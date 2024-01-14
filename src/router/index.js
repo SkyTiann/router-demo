@@ -1,15 +1,15 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import store from '@/store'
-import { combinedRouting, roleStrategy } from './compute'
+import { combinedRouting, rootRedirect, guard, routeMaps } from './compute'
 
 Vue.use(VueRouter)
 
 /**
  * 常规路由
+ * "InsertGroups" 为组路由插入位置
  */
 const routes = [
-  { path: '/', redirect: '/login' },
+  { path: '/', redirect: rootRedirect },
   { path: '/login', component: () => import('../views/login.vue') },
   "InsertGroups",
   { path: '/404', component: () => import('../views/404.vue') },
@@ -17,7 +17,9 @@ const routes = [
 ]
 
 /**
- * 组路由的数组下标对应 modules 中的下标
+ * 组路由
+ * 组路由中的一级路由默认都为children的第一个
+ * 标记在组路由上的权限会下沉到每一个子路由
  */
 export const groups = [
   {
@@ -69,13 +71,13 @@ export const groups = [
     ],
   },
   /**
-  * admin 与 user 专享
+  * user1 专享
   */
   {
     path: '/group3',
     meta: {
       menu: { title: '三组', icon: 'el-icon-eleme' },
-      roles: ['admin', 'user']
+      roles: ['user1']
     },
     children: [
       {
@@ -94,10 +96,14 @@ export const groups = [
       }
     ]
   },
+  /**
+   * user2 专享
+   */
   {
     path: '/group4',
     meta: {
       menu: { title: '四组', icon: 'el-icon-eleme' },
+      roles: ['user2']
     },
     children: [
       {
@@ -126,21 +132,14 @@ export const groups = [
   }
 ]
 
+
 const router = new VueRouter({
   mode: 'history',
   base: process.env.BASE_URL,
-  routes: combinedRouting(routes, groups, () => import('@/views/layout.vue'))
+  routes: combinedRouting(routes, groups, () => import('@/layout'))
 })
 
-router.beforeEach(async (to, from, next) => {
-  const { meta } = to
-  const userRoles = store.state.user.roles.length > 0
-    ? store.state.user.roles
-    : await store.dispatch('user/getUserRoles')
-  if (meta.roles === undefined) { next(); return }
-  if (roleStrategy(userRoles, meta.roles)) { next(); return }
-  next('/404')
-})
+router.beforeEach(guard)
 
 
 

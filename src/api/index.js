@@ -5,11 +5,11 @@
 const DelayTime = 1000
 
 export const getToken = () => new Promise((resolve) => {
-    setTimeout(() => { resolve({ token: 'aaaa.bbbbb.cccc' }) }, DelayTime)
+    setTimeout(() => { resolve({ token: 'aaaa.bbbbb.cccc' }) }, 5000)
 })
 
 export const getRoles = () => new Promise((resolve) => {
-    setTimeout(() => { resolve(['admin']) }, DelayTime);
+    setTimeout(() => { resolve(['user1']) }, DelayTime);
 })
 
 

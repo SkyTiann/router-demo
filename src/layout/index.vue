@@ -3,20 +3,19 @@
         <aside style="width: 250px;">
             <Sidebar></Sidebar>
         </aside>
-        <div>
+        <main>
+            <TagsView></TagsView>
             <router-view />
-        </div>
+        </main>
     </div>
 </template>
 
 <script>
-import Sidebar from "@/components/Sidebar2";
+import Sidebar from "./components/Sidebar";
+import TagsView from './components/TagsView'
 
 export default {
-    components: { Sidebar },
-    mounted(){
-        console.log('ni好');
-    }
+    components: { Sidebar, TagsView }
 }
 
 </script>
@@ -25,6 +24,10 @@ export default {
 .layout {
     display: flex;
     gap: 20px;
+}
+
+.layout>main {
+    flex: 1;
 }
 </style>
   
