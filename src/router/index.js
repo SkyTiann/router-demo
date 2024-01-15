@@ -1,12 +1,12 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import { combinedRouting, rootRedirect, guard, routeMaps } from './compute'
+import { combinedRouting, rootRedirect, guard } from './compute'
 
 Vue.use(VueRouter)
 
 /**
  * 常规路由
- * "InsertGroups" 为组路由插入位置
+ * "InsertGroups" 组路由插入位置
  */
 const routes = [
   { path: '/', redirect: rootRedirect },

@@ -33,5 +33,9 @@ export default {
 }
 </script>
   
-<style></style>
+<style>
+.scrollbar-wrapper {
+    overflow-x: hidden !important;
+}
+</style>
   

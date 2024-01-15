@@ -1,6 +1,6 @@
 <template>
     <div class="layout">
-        <aside style="width: 250px;">
+        <aside style="width: 270px;">
             <Sidebar></Sidebar>
         </aside>
         <main>
@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import Sidebar from "./components/Sidebar";
+import Sidebar from './components/Sidebar';
 import TagsView from './components/TagsView'
 
 export default {
